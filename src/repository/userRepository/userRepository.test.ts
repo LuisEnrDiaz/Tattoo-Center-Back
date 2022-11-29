@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { dbConnect } from '../../dbConnect.js';
-import { UserRepository } from './user.js';
+import { UserRepository } from './userRepository.js';
 
 describe('Given UserRepository', () => {
     const mockData = [

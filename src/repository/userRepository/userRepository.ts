@@ -1,6 +1,6 @@
 import createDebug from 'debug';
 
-import { User, UserI } from '../../entities/userEntities/user.js';
+import { User, UserI } from '../../entities/userEntities/userEntities.js';
 import { passwordEncrypt } from '../../services/auth/auth.js';
 import { id, UserRepo } from '../repository.js';
 

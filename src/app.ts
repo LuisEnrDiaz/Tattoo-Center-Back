@@ -2,7 +2,7 @@ import cors from 'cors';
 import express from 'express';
 import morgan from 'morgan';
 
-import { setCors } from './middleware/corsMiddleware/cors.js';
+import { setCors } from './middleware/corsMiddleware/corsMiddleware.js';
 import { errorManager } from './middleware/errorMiddleware/errorMiddleware.js';
 
 export const app = express();
