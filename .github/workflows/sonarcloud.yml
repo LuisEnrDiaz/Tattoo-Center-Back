@@ -53,6 +53,7 @@ jobs:
         env:
           USER: ${{ secrets.USER }}
           PASSWD: ${{ secrets.PASSWD }}
+          SECRET: ${{ secrets.SECRET}}
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
