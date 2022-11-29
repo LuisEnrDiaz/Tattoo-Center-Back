@@ -10,7 +10,7 @@ export type TokenPayload = {
 
 export const getSecret = (secret = SECRET) => {
     if (typeof secret !== 'string' || secret === '') {
-        throw new Error('Bad Secret for token cretion');
+        throw new Error('Bad Secret for token creation');
     }
     return secret;
 };
@@ -26,4 +26,8 @@ export const readToken = (token: string) => {
 
 export const passwordEncrypt = (password: string) => {
     return bc.hash(password, 10);
+};
+
+export const passwordValidate = (newPassword: string, hash: string) => {
+    return bc.compare(newPassword, hash);
 };
