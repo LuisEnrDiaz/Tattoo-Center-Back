@@ -69,4 +69,37 @@ describe('Given UserRepository', () => {
             }).rejects.toThrowError();
         });
     });
+
+    describe('Given patch is called', () => {
+        const updateName = 'jose';
+        test('Then patch should return', async () => {
+            const result = await repository.patch(testIds[1], {
+                name: updateName,
+            });
+            expect(result.name).toEqual(updateName);
+        });
+
+        test('Then patch should return error', () => {
+            expect(async () => {
+                const invalidId = '537b422da27b69c98b1916e1';
+                await repository.patch(invalidId, {
+                    name: updateName,
+                });
+            }).rejects.toThrowError();
+        });
+
+        describe('Given delete is called', () => {
+            test('Then delete should return', async () => {
+                const result = await repository.delete(testIds[1]);
+                expect(result).toEqual(testIds[1]);
+            });
+
+            test('Then delete should return error', () => {
+                expect(async () => {
+                    const invalidId = '537b422da27b69c98b1916e1';
+                    await repository.delete(invalidId);
+                }).rejects.toThrowError();
+            });
+        });
+    });
 });

@@ -68,7 +68,9 @@ export class UserRepository implements UserRepo<UserI> {
 
         const result = await this.#Model.findByIdAndDelete(id);
 
-        if (result === null) throw new Error('not found id');
+        if (result === null) {
+            throw new Error('not found id');
+        }
         return id;
     }
 
