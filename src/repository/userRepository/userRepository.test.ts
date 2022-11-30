@@ -45,13 +45,13 @@ describe('Given UserRepository', () => {
             image: 'luis',
         };
         test('Then post should return', async () => {
-            await repository.post(newData);
+            await repository.create(newData);
             expect(newData.name).toBe('luis');
         });
 
         test('Then post should return an error', () => {
             expect(async () => {
-                await repository.post({ name: '' });
+                await repository.create({ name: '' });
             }).rejects.toThrowError();
         });
     });
@@ -73,7 +73,7 @@ describe('Given UserRepository', () => {
     describe('Given patch is called', () => {
         const updateName = 'jose';
         test('Then patch should return', async () => {
-            const result = await repository.patch(testIds[1], {
+            const result = await repository.update(testIds[1], {
                 name: updateName,
             });
             expect(result.name).toEqual(updateName);
@@ -82,7 +82,7 @@ describe('Given UserRepository', () => {
         test('Then patch should return error', () => {
             expect(async () => {
                 const invalidId = '537b422da27b69c98b1916e1';
-                await repository.patch(invalidId, {
+                await repository.update(invalidId, {
                     name: updateName,
                 });
             }).rejects.toThrowError();

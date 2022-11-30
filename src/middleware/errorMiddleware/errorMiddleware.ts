@@ -3,7 +3,7 @@ import createDebug from 'debug';
 
 import { CustomError } from '../../interface/errorInterface/errorInterface.js';
 
-const debug = createDebug('W8:middleware:errorManager');
+const debug = createDebug('TC:middleware:errorManager');
 
 export const errorManager = (
     error: CustomError,

@@ -9,6 +9,7 @@ export type UserI = {
     favorites: Array<Types.ObjectId>;
     portfolio: Array<Types.ObjectId>;
     description: string;
+    tattoo: Types.ObjectId;
 };
 
 export type ProtoUserI = {
@@ -19,6 +20,7 @@ export type ProtoUserI = {
     favorites: Array<Types.ObjectId>;
     portfolio: Array<Types.ObjectId>;
     description: string;
+    tattoo: Types.ObjectId;
 };
 
 export const userSchema = new Schema<UserI>({
@@ -52,6 +54,10 @@ export const userSchema = new Schema<UserI>({
     ],
     description: {
         type: String,
+    },
+    tattoo: {
+        type: Schema.Types.ObjectId,
+        ref: 'tattoos',
     },
 });
 

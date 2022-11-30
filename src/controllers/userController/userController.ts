@@ -6,7 +6,7 @@ import { HTTPError } from '../../interface/errorInterface/errorInterface.js';
 import { UserRepo } from '../../repository/repository.js';
 import { createToken, passwordValidate } from '../../services/auth/auth.js';
 
-const debug = createDebug('W8:Controller:userController');
+const debug = createDebug('TC:Controller:userController');
 
 export class UserController {
     constructor(public readonly repository: UserRepo<UserI>) {
@@ -16,7 +16,7 @@ export class UserController {
     async register(req: Request, res: Response, next: NextFunction) {
         try {
             debug('register');
-            const user = await this.repository.post(req.body);
+            const user = await this.repository.create(req.body);
             res.status(201).json({ user });
         } catch (error) {
             const httpError = new HTTPError(

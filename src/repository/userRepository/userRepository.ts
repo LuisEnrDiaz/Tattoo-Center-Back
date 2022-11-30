@@ -4,7 +4,7 @@ import { User, UserI } from '../../entities/userEntities/userEntities.js';
 import { passwordEncrypt } from '../../services/auth/auth.js';
 import { id, UserRepo } from '../repository.js';
 
-const debug = createDebug('W8:repository:userRepository');
+const debug = createDebug('TC:repository:userRepository');
 
 export class UserRepository implements UserRepo<UserI> {
     #Model = User;
@@ -32,8 +32,8 @@ export class UserRepository implements UserRepo<UserI> {
         return result as UserI;
     }
 
-    async post(data: Partial<UserI>): Promise<UserI> {
-        debug('post', data);
+    async create(data: Partial<UserI>): Promise<UserI> {
+        debug('create', data);
 
         if (typeof data.password !== 'string') {
             throw new Error('');
@@ -51,8 +51,8 @@ export class UserRepository implements UserRepo<UserI> {
         return result;
     }
 
-    async patch(id: id, data: Partial<UserI>): Promise<UserI> {
-        debug('patch', id);
+    async update(id: id, data: Partial<UserI>): Promise<UserI> {
+        debug('update', id);
 
         const result = await this.#Model.findByIdAndUpdate(id, data, {
             new: true,
