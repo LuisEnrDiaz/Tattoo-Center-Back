@@ -29,7 +29,7 @@ export class UserRepository implements UserRepo<UserI> {
         if (!result) {
             throw new Error('not found id');
         }
-        return result;
+        return result as UserI;
     }
 
     async post(data: Partial<UserI>): Promise<UserI> {
@@ -41,7 +41,7 @@ export class UserRepository implements UserRepo<UserI> {
         data.password = await passwordEncrypt(data.password);
 
         const result = await this.#Model.create(data);
-        return result;
+        return result as UserI;
     }
 
     async find(search: Partial<UserI>): Promise<UserI> {
@@ -58,7 +58,9 @@ export class UserRepository implements UserRepo<UserI> {
             new: true,
         });
 
-        if (!result) throw new Error('not found id');
+        if (!result) {
+            throw new Error('not found id');
+        }
 
         return result;
     }
@@ -66,11 +68,7 @@ export class UserRepository implements UserRepo<UserI> {
     async delete(id: id): Promise<id> {
         debug('delete', id);
 
-        const result = await this.#Model.findByIdAndDelete(id);
-
-        if (result === null) {
-            throw new Error('not found id');
-        }
+        await this.#Model.findByIdAndDelete(id);
         return id;
     }
 

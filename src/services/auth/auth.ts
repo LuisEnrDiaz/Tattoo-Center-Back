@@ -4,8 +4,8 @@ import bc from 'bcryptjs';
 import { SECRET } from '../../config.js';
 
 export type TokenPayload = {
+    id: string;
     name: string;
-    password: string;
 };
 
 export const getSecret = (secret = SECRET) => {

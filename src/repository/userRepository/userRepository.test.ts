@@ -96,7 +96,7 @@ describe('Given UserRepository', () => {
 
             test('Then delete should return error', () => {
                 expect(async () => {
-                    const invalidId = '537b422da27b69c98b1916e1';
+                    const invalidId = testIds[5];
                     await repository.delete(invalidId);
                 }).rejects.toThrowError();
             });
