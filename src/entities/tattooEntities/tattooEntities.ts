@@ -1,4 +1,4 @@
-import { ObjectId, Schema, Types } from 'mongoose';
+import { model, ObjectId, Schema, Types } from 'mongoose';
 
 export type TattooI = {
     id: ObjectId;
@@ -31,17 +31,26 @@ export const tattooSchema = new Schema<TattooI>({
         type: String,
         required: true,
     },
-    categories: [
-        {
-            type: Array<Category>,
-            require: true,
-        },
-    ],
+    categories: {
+        type: [String],
+    },
+
     link: {
         type: String,
     },
     owner: {
         type: Schema.Types.ObjectId,
-        ref: 'users',
+        ref: 'User',
     },
 });
+
+tattooSchema.set('toJSON', {
+    transform: (_document, returnedObject) => {
+        returnedObject.id = returnedObject._id;
+        delete returnedObject.__v;
+        delete returnedObject._id;
+        delete returnedObject.passwd;
+    },
+});
+
+export const Tattoo = model<TattooI>('Tattoo', tattooSchema, 'tattoos');

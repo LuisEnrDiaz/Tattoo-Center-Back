@@ -22,18 +22,18 @@ export class UserRepository implements UserRepo<UserI> {
         debug('instance');
     }
 
-    async get(id: id): Promise<UserI> {
-        debug('get', id);
+    async getUser(id: id): Promise<UserI> {
+        debug('getUser', id);
 
-        const result = await this.#Model.findById(id);
+        const result = await this.#Model.findById(id).populate('favorites');
         if (!result) {
             throw new Error('not found id');
         }
-        return result as UserI;
+        return result;
     }
 
-    async create(data: Partial<UserI>): Promise<UserI> {
-        debug('create', data);
+    async createUser(data: Partial<UserI>): Promise<UserI> {
+        debug('createUser', data);
 
         if (typeof data.password !== 'string') {
             throw new Error('');
@@ -44,15 +44,15 @@ export class UserRepository implements UserRepo<UserI> {
         return result as UserI;
     }
 
-    async find(search: Partial<UserI>): Promise<UserI> {
-        debug('find', { search });
+    async findUser(search: Partial<UserI>): Promise<UserI> {
+        debug('findUser', { search });
         const result = await this.#Model.findOne(search);
         if (!result) throw new Error('not found id');
         return result;
     }
 
-    async update(id: id, data: Partial<UserI>): Promise<UserI> {
-        debug('update', id);
+    async updateUserFavorites(id: id, data: Partial<UserI>): Promise<UserI> {
+        debug('updateUserFavorites', id);
 
         const result = await this.#Model.findByIdAndUpdate(id, data, {
             new: true,
@@ -61,12 +61,11 @@ export class UserRepository implements UserRepo<UserI> {
         if (!result) {
             throw new Error('not found id');
         }
-
         return result;
     }
 
-    async delete(id: id): Promise<id> {
-        debug('delete', id);
+    async deleteUser(id: id): Promise<id> {
+        debug('deleteUser', id);
 
         await this.#Model.findByIdAndDelete(id);
         return id;
