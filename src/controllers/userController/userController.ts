@@ -4,7 +4,6 @@ import { TattooI } from '../../entities/tattooEntities/tattooEntities.js';
 
 import { UserI } from '../../entities/userEntities/userEntities.js';
 import { HTTPError } from '../../interface/errorInterface/errorInterface.js';
-import { ExtraRequest } from '../../middleware/interceptors/interceptors.js';
 import { TattooRepo, UserRepo } from '../../repository/repository.js';
 import { createToken, passwordValidate } from '../../services/auth/auth.js';
 
@@ -16,6 +15,16 @@ export class UserController {
         public readonly tattooRepository: TattooRepo<TattooI>
     ) {
         debug('instance');
+    }
+
+    async getUser(req: Request, resp: Response, next: NextFunction) {
+        try {
+            debug('getUser');
+            const user = await this.userRepository.getUser(req.params.id);
+            resp.json({ user });
+        } catch (error) {
+            next(this.#createHttpError(error as Error));
+        }
     }
 
     async register(req: Request, res: Response, next: NextFunction) {
@@ -70,22 +79,53 @@ export class UserController {
         }
     }
 
-    async addTattooFavorites(
-        req: ExtraRequest,
+    async addTattooFavorites(req: Request, res: Response, next: NextFunction) {
+        try {
+            debug('addTattooFavorites');
+
+            const user = await this.userRepository.getUser(req.params.id);
+
+            user.favorites.forEach((item) => {
+                if (item._id.toString() === req.body.id.toString()) {
+                    throw new Error('Duplicated id');
+                }
+            });
+
+            user.favorites.push(req.body.id);
+            const result = await this.userRepository.updateUser(
+                req.params.id,
+                user
+            );
+            res.status(200);
+            res.json({ result });
+        } catch (error) {
+            next(this.#createHttpError(error as Error));
+        }
+    }
+
+    async deleteTattooFavorites(
+        req: Request,
         res: Response,
         next: NextFunction
     ) {
         try {
-            debug('addTattooFavorites');
-            const user = await this.userRepository.getUser(req.params.id);
-            user.favorites.push(req.body.favorites);
+            debug('deleteTattooFavorites');
 
-            const result = await this.userRepository.updateUserFavorites(
-                req.params.id,
-                user
+            const user = await this.userRepository.getUser(req.params.id);
+            const tattoo = await this.tattooRepository.getTattoo(req.body.id);
+
+            const deleteTattoo = user.favorites.filter((item) => {
+                return item._id.toString() !== tattoo.id.toString();
+            });
+
+            const updateTattoo = await this.userRepository.updateUser(
+                user.id.toString(),
+                {
+                    favorites: deleteTattoo,
+                }
             );
 
-            res.json({ result });
+            res.json({ updateTattoo });
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }
@@ -100,6 +140,7 @@ export class UserController {
             );
             return httpError;
         }
+
         const httpError = new HTTPError(
             503,
             'Service unavailable',

@@ -1,18 +1,18 @@
-import { model, ObjectId, Schema, Types } from 'mongoose';
+import { model, Schema, Types } from 'mongoose';
 
 export type TattooI = {
-    id: ObjectId;
+    id: Types.ObjectId;
     image: string;
     categories: Array<Category>;
     link: string;
-    owner: ObjectId;
+    owner: Types.ObjectId;
 };
 
 export type ProtoTattooI = {
     image: string;
     categories: Array<Category>;
     link: string;
-    owner: ObjectId;
+    owner: Types.ObjectId;
 };
 
 type Category =
@@ -24,9 +24,6 @@ type Category =
     | 'BLACK & GREY';
 
 export const tattooSchema = new Schema<TattooI>({
-    id: {
-        type: Types.ObjectId,
-    },
     image: {
         type: String,
         required: true,
@@ -49,7 +46,6 @@ tattooSchema.set('toJSON', {
         returnedObject.id = returnedObject._id;
         delete returnedObject.__v;
         delete returnedObject._id;
-        delete returnedObject.passwd;
     },
 });
 

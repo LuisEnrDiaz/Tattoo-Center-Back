@@ -1,5 +1,4 @@
 import createDebug from 'debug';
-import { Types } from 'mongoose';
 
 import {
     Tattoo,
@@ -24,24 +23,54 @@ export class TattooRepository implements TattooRepo<TattooI> {
     private constructor() {
         debug('instance');
     }
-    createTattoo!: (data: Partial<TattooI>) => Promise<TattooI>;
-    updateTattoo!: (id: id, data: Partial<TattooI>) => Promise<TattooI>;
+
     deleteTattoo!: (id: id) => Promise<id>;
 
     async getAllTattoo(): Promise<TattooI[]> {
         debug('getAllTattoo');
         const result = this.#Model.find().populate('owner', {
-            Tattoo: 0,
+            tattoo: 0,
         });
         return result;
     }
 
     async getTattoo(id: id): Promise<TattooI> {
-        debug('getTattoo');
+        debug('getTattoo', id);
+
         const result = await this.#Model
             .findById(id)
-            .populate<{ _id: Types.ObjectId }>('owner');
-        if (!result) throw new Error('Not found id');
+            .populate('owner', { favorites: 0 });
+        if (!result) {
+            throw new Error('not found id');
+        }
         return result;
+    }
+
+    async createTattoo(data: Partial<TattooI>): Promise<TattooI> {
+        debug('createTattoo', data);
+
+        const result = await (
+            await this.#Model.create(data)
+        ).populate('owner', { tattoo: 0 });
+        return result;
+    }
+
+    async updateTattoo(id: id, data: Partial<TattooI>): Promise<TattooI> {
+        debug('uodateTattoo', id);
+
+        const result = await this.#Model
+            .findByIdAndUpdate(id, data, {
+                new: true,
+            })
+            .populate('owner', { tattoo: 0 });
+
+        if (!result) {
+            throw new Error('not found id');
+        }
+        return result;
+    }
+
+    getTattooModel() {
+        return this.#Model;
     }
 }

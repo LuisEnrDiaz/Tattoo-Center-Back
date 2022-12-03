@@ -36,7 +36,7 @@ describe('Given UserRepository', () => {
     });
 
     afterAll(async () => {
-        mongoose.disconnect();
+        await mongoose.disconnect();
     });
 
     describe('Given getUser is called', () => {
@@ -88,7 +88,7 @@ describe('Given UserRepository', () => {
     describe('Given updateUserFavorites is called', () => {
         const updateName = 'jose';
         test('Then updateUserFavorites should return', async () => {
-            const result = await repository.updateUserFavorites(testIds[0], {
+            const result = await repository.updateUser(testIds[0], {
                 name: updateName,
             });
             expect(result.name).toEqual(updateName);
@@ -97,7 +97,7 @@ describe('Given UserRepository', () => {
         test('Then updateUserFavorites should return error', () => {
             expect(async () => {
                 const invalidId = '537b422da27b69c98b1916e1';
-                await repository.updateUserFavorites(invalidId, {
+                await repository.updateUser(invalidId, {
                     name: updateName,
                 });
             }).rejects.toThrowError();

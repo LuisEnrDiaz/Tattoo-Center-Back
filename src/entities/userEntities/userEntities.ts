@@ -1,5 +1,4 @@
 import { model, Schema, Types } from 'mongoose';
-import { TattooI } from '../tattooEntities/tattooEntities';
 
 export type UserI = {
     id: Types.ObjectId;
@@ -7,7 +6,7 @@ export type UserI = {
     email: string;
     password: string;
     image: string;
-    favorites: Array<TattooI>;
+    favorites: Array<Types.ObjectId>;
     portfolio: Array<Types.ObjectId>;
     description: string;
     tattoo: Types.ObjectId;
@@ -45,13 +44,13 @@ export const userSchema = new Schema<UserI>({
     },
     favorites: [
         {
-            type: Schema.Types.ObjectId,
+            type: Types.ObjectId,
             ref: 'Tattoo',
         },
     ],
     portfolio: [
         {
-            type: Schema.Types.ObjectId,
+            type: Types.ObjectId,
             ref: 'Tattoo',
         },
     ],

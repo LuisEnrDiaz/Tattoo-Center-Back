@@ -25,7 +25,10 @@ export class UserRepository implements UserRepo<UserI> {
     async getUser(id: id): Promise<UserI> {
         debug('getUser', id);
 
-        const result = await this.#Model.findById(id).populate('favorites');
+        const result = await this.#Model
+            .findById(id)
+            .populate('favorites')
+            .populate('portfolio');
         if (!result) {
             throw new Error('not found id');
         }
@@ -51,8 +54,8 @@ export class UserRepository implements UserRepo<UserI> {
         return result;
     }
 
-    async updateUserFavorites(id: id, data: Partial<UserI>): Promise<UserI> {
-        debug('updateUserFavorites', id);
+    async updateUser(id: id, data: Partial<UserI>): Promise<UserI> {
+        debug('updateUser', id);
 
         const result = await this.#Model.findByIdAndUpdate(id, data, {
             new: true,

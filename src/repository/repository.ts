@@ -4,7 +4,7 @@ export interface UserRepo<T> {
     getUser: (id: id) => Promise<T>;
     createUser: (data: Partial<T>) => Promise<T>;
     findUser: (data: Partial<T>) => Promise<T>;
-    updateUserFavorites: (id: id, data: Partial<T>) => Promise<T>;
+    updateUser: (id: id, data: Partial<T>) => Promise<T>;
     deleteUser: (id: id) => Promise<id>;
 }
 
