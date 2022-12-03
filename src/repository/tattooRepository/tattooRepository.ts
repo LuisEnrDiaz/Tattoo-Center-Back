@@ -24,8 +24,6 @@ export class TattooRepository implements TattooRepo<TattooI> {
         debug('instance');
     }
 
-    deleteTattoo!: (id: id) => Promise<id>;
-
     async getAllTattoo(): Promise<TattooI[]> {
         debug('getAllTattoo');
         const result = this.#Model.find().populate('owner', {
@@ -56,7 +54,7 @@ export class TattooRepository implements TattooRepo<TattooI> {
     }
 
     async updateTattoo(id: id, data: Partial<TattooI>): Promise<TattooI> {
-        debug('uodateTattoo', id);
+        debug('updateTattoo', id);
 
         const result = await this.#Model
             .findByIdAndUpdate(id, data, {
@@ -68,6 +66,16 @@ export class TattooRepository implements TattooRepo<TattooI> {
             throw new Error('not found id');
         }
         return result;
+    }
+
+    async deleteTattoo(id: id): Promise<id> {
+        debug('deleteTattoo', id);
+
+        await this.#Model
+            .findByIdAndDelete(id)
+            .populate('owner', { tattoo: 0 });
+
+        return id;
     }
 
     getTattooModel() {

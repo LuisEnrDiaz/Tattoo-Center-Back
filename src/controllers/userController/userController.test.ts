@@ -12,9 +12,18 @@ import { TattooRepository } from '../../repository/tattooRepository/tattooReposi
 jest.mock('./../../services/auth/auth.js');
 
 const mockData = [
-    { id: '1', name: 'pepe', password: '123', email: '', image: '' },
+    {
+        id: '1',
+        name: 'pepe',
+        password: '123',
+        email: '',
+        image: '',
+        favorites: [],
+    },
     { id: '2', name: 'coco', password: '456', email: '', image: '' },
 ];
+
+const mockTattoo = { favorites: ['123'] };
 
 describe('Given the users controller,', () => {
     let repository: TattooRepository;
@@ -28,12 +37,15 @@ describe('Given the users controller,', () => {
         repository = TattooRepository.getInstance();
         userRepository = UserRepository.getInstance();
 
+        userController = new UserController(userRepository, repository);
+
         userRepository.createUser = jest.fn().mockResolvedValue(mockData[0]);
         userRepository.findUser = jest.fn().mockResolvedValue(mockData[0]);
         userRepository.deleteUser = jest.fn().mockResolvedValue(mockData[0]);
         userRepository.getUser = jest.fn().mockResolvedValue(mockData[0]);
-        userController = new UserController(userRepository, repository);
-
+        userController.addTattooFavorites = jest
+            .fn()
+            .mockResolvedValue(mockTattoo);
         req = {};
         res = {};
         res.status = jest.fn().mockReturnValue(res);
@@ -60,11 +72,21 @@ describe('Given the users controller,', () => {
                 'Not found id',
                 'message of error'
             );
-            (createToken as jest.Mock).mockReturnValue('token');
             (passwordValidate as jest.Mock).mockResolvedValue(false);
+            (createToken as jest.Mock).mockReturnValue('token');
             req.body = { password: 'password' };
             await userController.login(req as Request, res as Response, next);
             expect(error).toBeInstanceOf(HTTPError);
+        });
+
+        test('Then login should have been called', async () => {
+            (passwordValidate as jest.Mock).mockResolvedValue(true);
+            (createToken as jest.Mock).mockReturnValue('token');
+            req.body = { password: 'pepe' };
+
+            await userController.login(req as Request, res as Response, next);
+
+            expect(res.json).toHaveBeenCalledWith({ token: 'token' });
         });
     });
 
@@ -84,8 +106,20 @@ describe('Given the users controller,', () => {
         test('Then getUser should return', async () => {
             req.params = { id: '1' };
             await userController.getUser(req as Request, res as Response, next);
-            console.log(res.json);
+
             expect(res.json).toHaveBeenNthCalledWith(1, { user: mockData[0] });
+        });
+    });
+
+    describe('Given addTattooFavorites is called', () => {
+        test('Then addTattooFavorites return', async () => {
+            await userController.addTattooFavorites(
+                req as Request,
+                res as Response,
+                next
+            );
+
+            expect(res.json).toHaveBeenCalledWith(mockTattoo);
         });
     });
 });

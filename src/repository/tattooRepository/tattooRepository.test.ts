@@ -56,12 +56,13 @@ describe('Given TattooRepository', () => {
         test('Then getTattoo return id fail', () => {
             expect(async () => {
                 await repository.getTattoo('678a19943b803213a758ebc7');
-            });
+            }).rejects.toThrowError();
         });
     });
 
     describe('Given createTattoo is called', () => {
         const newData = { image: 'maya', link: 'maya' };
+
         test('Then createTattoo return', async () => {
             const result = await repository.createTattoo(newData);
             expect(result.image).toEqual(newData.image);
@@ -82,6 +83,25 @@ describe('Given TattooRepository', () => {
         test('Then updateTattoo return error', () => {
             expect(async () => {
                 await repository.updateTattoo(testIds[18], {});
+            }).rejects.toThrowError();
+        });
+    });
+
+    describe('Given deleteTattoo is called', () => {
+        test('Then deleteTattoo return', async () => {
+            const result = await repository.deleteTattoo(testIds[0]);
+            expect(result).toEqual(testIds[0]);
+        });
+
+        test('Then deleteTattoo return error', () => {
+            expect(async () => {
+                await repository.deleteTattoo(testIds[158]);
+            }).rejects.toThrowError();
+        });
+
+        test('Then deleteTattoo return error', () => {
+            expect(async () => {
+                await repository.deleteTattoo('678a19943b803213a758ebc7');
             }).rejects.toThrowError();
         });
     });
