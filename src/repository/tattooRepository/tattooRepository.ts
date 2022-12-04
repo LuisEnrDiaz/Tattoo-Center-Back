@@ -27,8 +27,9 @@ export class TattooRepository implements TattooRepo<TattooI> {
     async getAllTattoo(): Promise<TattooI[]> {
         debug('getAllTattoo');
         const result = this.#Model.find().populate('owner', {
-            tattoo: 0,
+            favorites: 0,
         });
+
         return result;
     }
 

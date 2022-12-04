@@ -17,11 +17,11 @@ export class UserController {
         debug('instance');
     }
 
-    async getUser(req: Request, resp: Response, next: NextFunction) {
+    async getUser(req: Request, res: Response, next: NextFunction) {
         try {
             debug('getUser');
             const user = await this.userRepository.getUser(req.params.id);
-            resp.json({ user });
+            res.json({ user });
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }
@@ -92,6 +92,7 @@ export class UserController {
             });
 
             user.favorites.push(req.body.id);
+
             const result = await this.userRepository.updateUser(
                 req.params.id,
                 user
