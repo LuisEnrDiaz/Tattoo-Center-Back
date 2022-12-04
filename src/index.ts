@@ -5,7 +5,7 @@ import { app } from './app.js';
 import { dbConnect } from './dbConnect.js';
 import { CustomError } from './interface/errorInterface/errorInterface.js';
 
-const debug = createDebug('W8');
+const debug = createDebug('TC');
 
 const port = process.env.PORT || 3300;
 const server = http.createServer(app);

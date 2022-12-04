@@ -4,7 +4,7 @@ import { User, UserI } from '../../entities/userEntities/userEntities.js';
 import { passwordEncrypt } from '../../services/auth/auth.js';
 import { id, UserRepo } from '../repository.js';
 
-const debug = createDebug('W8:repository:userRepository');
+const debug = createDebug('TC:repository:userRepository');
 
 export class UserRepository implements UserRepo<UserI> {
     #Model = User;
@@ -22,18 +22,21 @@ export class UserRepository implements UserRepo<UserI> {
         debug('instance');
     }
 
-    async get(id: id): Promise<UserI> {
-        debug('get', id);
+    async getUser(id: id): Promise<UserI> {
+        debug('getUser', id);
 
-        const result = await this.#Model.findById(id);
+        const result = await this.#Model
+            .findById(id)
+            .populate('favorites')
+            .populate('portfolio');
         if (!result) {
             throw new Error('not found id');
         }
         return result;
     }
 
-    async post(data: Partial<UserI>): Promise<UserI> {
-        debug('post', data);
+    async createUser(data: Partial<UserI>): Promise<UserI> {
+        debug('createUser', data);
 
         if (typeof data.password !== 'string') {
             throw new Error('');
@@ -41,36 +44,33 @@ export class UserRepository implements UserRepo<UserI> {
         data.password = await passwordEncrypt(data.password);
 
         const result = await this.#Model.create(data);
-        return result;
+        return result as UserI;
     }
 
-    async find(search: Partial<UserI>): Promise<UserI> {
-        debug('find', { search });
+    async findUser(search: Partial<UserI>): Promise<UserI> {
+        debug('findUser', { search });
         const result = await this.#Model.findOne(search);
         if (!result) throw new Error('not found id');
         return result;
     }
 
-    async patch(id: id, data: Partial<UserI>): Promise<UserI> {
-        debug('patch', id);
+    async updateUser(id: id, data: Partial<UserI>): Promise<UserI> {
+        debug('updateUser', id);
 
         const result = await this.#Model.findByIdAndUpdate(id, data, {
             new: true,
         });
 
-        if (!result) throw new Error('not found id');
-
+        if (!result) {
+            throw new Error('not found id');
+        }
         return result;
     }
 
-    async delete(id: id): Promise<id> {
-        debug('delete', id);
+    async deleteUser(id: id): Promise<id> {
+        debug('deleteUser', id);
 
-        const result = await this.#Model.findByIdAndDelete(id);
-
-        if (result === null) {
-            throw new Error('not found id');
-        }
+        await this.#Model.findByIdAndDelete(id);
         return id;
     }
 

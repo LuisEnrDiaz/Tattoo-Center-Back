@@ -4,6 +4,8 @@ import morgan from 'morgan';
 
 import { setCors } from './middleware/corsMiddleware/corsMiddleware.js';
 import { errorManager } from './middleware/errorMiddleware/errorMiddleware.js';
+import { tattooRoutes } from './routes/tattooRoutes/tattooRoutes.js';
+import { userRoutes } from './routes/userRoutes/userRoutes.js';
 
 export const app = express();
 
@@ -16,6 +18,9 @@ const corsOptions = {
 app.use(morgan('dev'));
 app.use(cors(corsOptions));
 app.use(express.json());
+
+app.use('/users', userRoutes);
+app.use('/tattoos', tattooRoutes);
 
 app.use(setCors);
 
