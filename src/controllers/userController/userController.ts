@@ -1,7 +1,7 @@
 import createDebug from 'debug';
 import { Request, Response, NextFunction } from 'express';
-import { TattooI } from '../../entities/tattooEntities/tattooEntities.js';
 
+import { TattooI } from '../../entities/tattooEntities/tattooEntities.js';
 import { UserI } from '../../entities/userEntities/userEntities.js';
 import { HTTPError } from '../../interface/errorInterface/errorInterface.js';
 import { TattooRepo, UserRepo } from '../../repository/repository.js';
