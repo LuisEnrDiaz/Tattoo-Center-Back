@@ -35,11 +35,9 @@ export class TattooController {
         try {
             debug('getTattoo');
 
-            const tattoos = await this.tattooRepository.getTattoo(
-                req.params.id
-            );
+            const tattoo = await this.tattooRepository.getTattoo(req.params.id);
 
-            res.json({ tattoos });
+            res.json(tattoo);
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }
@@ -63,7 +61,7 @@ export class TattooController {
                 user
             );
 
-            res.json({ tattoos });
+            res.json(tattoos);
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }
@@ -76,16 +74,39 @@ export class TattooController {
             const user = await this.userRepository.getUser(req.params.id);
 
             if (user.id.toString() !== req.body.owner.toString()) {
-                throw new Error('que no pesao');
+                throw new Error('difference id');
             }
 
-            user.portfolio.forEach((item) => {
-                item._id.toString() !== req.body.id.toString();
+            user.portfolio.filter((item) => {
+                return item.id.toString() !== req.body.id.toString();
             });
 
             await this.tattooRepository.updateTattoo(req.body.id, req.body);
 
             user.portfolio.push(req.body.id);
+
+            const result = await this.userRepository.updateUser(
+                req.params.id,
+                user
+            );
+
+            res.json(result);
+        } catch (error) {
+            next(this.#createHttpError(error as Error));
+        }
+    }
+
+    async deleteTattoo(req: Request, res: Response, next: NextFunction) {
+        try {
+            debug('deleteTattoo');
+
+            const user = await this.userRepository.getUser(req.params.id);
+
+            if (user.id.toString() !== req.body.owner.toString()) {
+                throw new Error('difference id');
+            }
+
+            await this.tattooRepository.deleteTattoo(req.body.id);
 
             const result = await this.userRepository.updateUser(
                 req.params.id,

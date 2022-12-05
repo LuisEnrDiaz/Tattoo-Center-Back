@@ -18,7 +18,7 @@ const mockData = [
         password: '123',
         email: '',
         image: '',
-        favorites: [],
+        favorites: [{ id: '1' }],
     },
     {
         id: '2',
@@ -30,9 +30,20 @@ const mockData = [
     },
 ];
 
-const mockTattoo = '123';
+const mockDataFavorites = {
+    id: '3',
+    name: 'pepe',
+    password: '123',
+    email: '',
+    image: '',
+    favorites: [{ id: '1' }, { id: '3' }],
+};
+
+const mockTattoo = { id: '1', favorites: ['123'] };
 
 describe('Given the users controller,', () => {
+    jest.setTimeout(20000);
+
     let repository: TattooRepository;
     let userRepository: UserRepository;
     let userController: UserController;
@@ -48,14 +59,11 @@ describe('Given the users controller,', () => {
 
         userRepository.createUser = jest.fn().mockResolvedValue(mockData[0]);
         userRepository.findUser = jest.fn().mockResolvedValue(mockData[0]);
-        userRepository.deleteUser = jest.fn().mockResolvedValue(mockData[0]);
+        userRepository.deleteUser = jest
+            .fn()
+            .mockResolvedValue(mockDataFavorites);
         userRepository.getUser = jest.fn().mockResolvedValue(mockData[1]);
-        userController.deleteTattooFavorites = jest
-            .fn()
-            .mockResolvedValue(mockData[0]);
-        userController.addTattooFavorites = jest
-            .fn()
-            .mockResolvedValue(mockData[0]);
+        userRepository.updateUser = jest.fn().mockResolvedValue(mockData[0]);
         req = {};
         res = {};
         res.status = jest.fn().mockReturnValue(res);
@@ -121,21 +129,33 @@ describe('Given the users controller,', () => {
             expect(res.json).toHaveBeenNthCalledWith(1, { user: mockData[1] });
         });
     });
-    // Probando este test no conseguido
-    // describe('Given addTattooFavorites is called', () => {
-    //     test('Then addTattooFavorites return', async () => {
-    //         req.params = { id: '1' };
-    //         req.body = mockTattoo
-    //         await userController.addTattooFavorites(
-    //             req as Request,
-    //             res as Response,
-    //             next
-    //         );
 
-    //         expect(res.json).toHaveBeenCalledWith(mockTattoo);
-    //     });
+    describe('Given addTattooFavorites is called', () => {
+        test('Then addTattooFavorites return', async () => {
+            req.params = { id: '1' };
+            req.body = { id: '2' };
 
-    // });
+            await userController.addTattooFavorites(
+                req as Request,
+                res as Response,
+                next
+            );
+            expect(res.json).toHaveBeenCalledWith(mockData[0]);
+        });
+    });
+
+    describe('Given deleteTattooFavorites is called', () => {
+        test('Then deleteTattooFavorites return', async () => {
+            req.params = { id: '3' };
+            req.body = { id: '3' };
+            await userController.deleteTattooFavorites(
+                req as Request,
+                res as Response,
+                next
+            );
+            expect(res.json).toHaveBeenCalledWith(mockData[0]);
+        });
+    });
 });
 
 describe('Given UserController return error', () => {

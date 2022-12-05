@@ -98,7 +98,7 @@ export class UserController {
                 user
             );
             res.status(200);
-            res.json({ result });
+            res.json(result);
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }
@@ -126,7 +126,7 @@ export class UserController {
                 }
             );
 
-            res.json({ updateTattoo });
+            res.json(updateTattoo);
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }
