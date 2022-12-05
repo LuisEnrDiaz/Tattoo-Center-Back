@@ -15,3 +15,4 @@ tattooRoutes.get('/', controller.getAllTattoo.bind(controller));
 tattooRoutes.get('/:id', controller.getTattoo.bind(controller));
 tattooRoutes.post('/:id', controller.createTattoo.bind(controller));
 tattooRoutes.patch('/:id', controller.updateTattoo.bind(controller));
+tattooRoutes.delete('/:id', controller.deleteTattoo.bind(controller));

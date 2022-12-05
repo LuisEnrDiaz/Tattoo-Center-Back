@@ -93,12 +93,11 @@ export class UserController {
 
             user.favorites.push(req.body.id);
 
-            const result = await this.userRepository.updateUser(
+            const favorites = await this.userRepository.updateUser(
                 req.params.id,
                 user
             );
-            res.status(200);
-            res.json(result);
+            res.json({ favorites });
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }
@@ -126,7 +125,7 @@ export class UserController {
                 }
             );
 
-            res.json(updateTattoo);
+            res.json({ updateTattoo });
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }
