@@ -147,6 +147,32 @@ describe('Given TattooController', () => {
                 updateUser: { name: 'pepe' },
             });
         });
+
+        test('Then deleteTattoo return error', async () => {
+            req = {
+                params: { id: '123' },
+                body: { id: '14', owner: '4851' },
+            };
+            userRepository.getUser = jest
+                .fn()
+                .mockResolvedValue({ portfolio: [{ _id: '14' }], id: '123' });
+
+            tattooRepository.getTattoo = jest
+                .fn()
+                .mockResolvedValue({ id: '14', owner: { _id: '165' } });
+
+            tattooRepository.deleteTattoo = jest.fn().mockResolvedValue({});
+            userRepository.updateUser = jest
+                .fn()
+                .mockResolvedValue({ name: 'pepe' });
+
+            await tattooController.deleteTattoo(
+                req as Request,
+                res as Response,
+                next
+            );
+            expect(next).toBeCalled();
+        });
     });
 });
 
