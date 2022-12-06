@@ -49,7 +49,7 @@ describe('Given interceptor logged', () => {
     });
 });
 
-describe('Given the interceptor authentication', () => {
+describe('Given the interceptor Who', () => {
     describe('When we instantiate it', () => {
         const userRepo = UserRepository.getInstance();
 
@@ -115,7 +115,7 @@ describe('Given the interceptor authentication', () => {
             };
             const res: Partial<Response> = {};
             const next: NextFunction = jest.fn();
-            const error = new Error('Wrong email or password');
+            const error = new Error('User or password incorrect');
             who(req as ExtraRequest, res as Response, next);
             expect(error).toBeInstanceOf(Error);
             expect(next).toHaveBeenCalled();

@@ -141,7 +141,7 @@ describe('Given the users controller,', () => {
             });
         });
 
-        test('should first', async () => {
+        test('Then addTattooFavorites return error', async () => {
             req = {
                 body: {
                     id: '3',
