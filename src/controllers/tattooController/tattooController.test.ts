@@ -160,12 +160,6 @@ describe('Given TattooController', () => {
             tattooRepository.getTattoo = jest
                 .fn()
                 .mockResolvedValue({ id: '14', owner: { _id: '165' } });
-
-            tattooRepository.deleteTattoo = jest.fn().mockResolvedValue({});
-            userRepository.updateUser = jest
-                .fn()
-                .mockResolvedValue({ name: 'pepe' });
-
             await tattooController.deleteTattoo(
                 req as Request,
                 res as Response,
