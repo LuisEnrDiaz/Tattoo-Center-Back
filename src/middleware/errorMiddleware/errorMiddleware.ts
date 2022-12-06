@@ -8,9 +8,9 @@ const debug = createDebug('TC:middleware:errorManager');
 
 export const errorManager = (
     error: CustomError,
-    req: Request,
+    _req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
 ) => {
     debug(error.name, error.statusCode, error.statusMessage, error.message);
 
@@ -26,5 +26,6 @@ export const errorManager = (
         error: error.message,
     };
     res.status(status);
-    res.json(result).end();
+    res.json(result);
+    res.end();
 };
