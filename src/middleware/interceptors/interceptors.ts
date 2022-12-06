@@ -20,13 +20,7 @@ export const logged = (
     debug('logged');
     const authString = req.get('Authorization');
     if (!authString || !authString?.startsWith('Bearer')) {
-        next(
-            new HTTPError(
-                403,
-                'Forbidden',
-                'Usuario o contraseña incorrecto (Slice)'
-            )
-        );
+        next(new HTTPError(403, 'Forbidden', 'User or password incorrect'));
         return;
     }
     try {
@@ -35,9 +29,7 @@ export const logged = (
         req.payload = readToken(token);
         next();
     } catch (error) {
-        next(
-            new HTTPError(403, 'Forbidden', 'Usuario o contraseña incorrecto')
-        );
+        next(new HTTPError(403, 'Forbidden', 'User or password incorrect'));
     }
 };
 
@@ -51,13 +43,7 @@ export const who = async (
     try {
         const tattoo = await repository.getTattoo(req.params.id);
         if (!req.payload || tattoo.owner._id.toString() !== req.payload.id) {
-            next(
-                new HTTPError(
-                    403,
-                    'Forbidden',
-                    'Usuario o contraseña incorrecto'
-                )
-            );
+            next(new HTTPError(403, 'Forbidden', 'User or password incorrect'));
         }
         next();
     } catch (error) {

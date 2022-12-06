@@ -8,13 +8,6 @@ import { TattooRepository } from '../../repository/tattooRepository/tattooReposi
 import { UserRepository } from '../../repository/userRepository/userRepository';
 import { TattooController } from './tattooController';
 
-const mockTattoo = [
-    { id: '1', image: 'pepe' },
-    { id: '2', image: 'coco' },
-];
-
-const newTattoo = { id: '3', image: 'maya' };
-
 describe('Given TattooController', () => {
     let tattooRepository: TattooRepository;
     let userRepository: UserRepository;
@@ -23,23 +16,32 @@ describe('Given TattooController', () => {
     let res: Partial<Response>;
     let next: NextFunction;
 
+    const mockUser = {
+        id: '63873678dd293e7b902063f5',
+        name: 'pepe',
+        portfolio: [{ id: '1' }],
+    };
+
+    const mockTattoo = [
+        { id: '1', image: 'pepe', owner: '1' },
+        { id: '2', image: 'coco', owner: '1' },
+    ];
+    const newTattoo = { image: 'maya' };
+
     beforeEach(() => {
         tattooRepository = TattooRepository.getInstance();
         userRepository = UserRepository.getInstance();
-
-        tattooRepository.getTattoo = jest.fn().mockReturnValue(mockTattoo[0]);
-        tattooRepository.getAllTattoo = jest.fn().mockReturnValue(['tattoo']);
-        tattooRepository.createTattoo = jest.fn().mockReturnValue(newTattoo);
-        tattooRepository.updateTattoo = jest
-            .fn()
-            .mockReturnValue(mockTattoo[0]);
-        tattooRepository.deleteTattoo = jest.fn().mockReturnValue({});
         tattooController = new TattooController(
             tattooRepository,
             userRepository
         );
 
-        req = {};
+        tattooRepository.deleteTattoo = jest.fn().mockReturnValue({});
+
+        req = {
+            params: { id: '13' },
+            body: { id: '341', owner: '16' },
+        };
         res = {
             json: jest.fn(),
         };
@@ -48,6 +50,9 @@ describe('Given TattooController', () => {
 
     describe('When getAllTattoo is called', () => {
         test('Then getAllTattoo should return tattoos', async () => {
+            tattooRepository.getAllTattoo = jest
+                .fn()
+                .mockReturnValue(['tattoo']);
             await tattooController.getAllTattoo(
                 req as Request,
                 res as Response,
@@ -59,38 +64,89 @@ describe('Given TattooController', () => {
 
     describe('When getTattoo is called', () => {
         test('Then getTattoo should return tattoo', async () => {
-            req.params = { id: '1' };
-            req.body = newTattoo;
+            tattooRepository.getTattoo = jest
+                .fn()
+                .mockReturnValue(mockTattoo[0]);
+
             await tattooController.getTattoo(
                 req as Request,
                 res as Response,
                 next
             );
-            expect(res.json).toHaveBeenCalledWith(mockTattoo[0]);
+            expect(res.json).toHaveBeenCalledWith({ tattoo: mockTattoo[0] });
         });
     });
 
     describe('When createTattoo is called', () => {
-        test('should first', async () => {
-            req.params = { id: '1' };
-            req.body = mockTattoo;
+        test('Then createTattoo should return', async () => {
+            tattooRepository.createTattoo = jest
+                .fn()
+                .mockReturnValue({ ...newTattoo, id: '1' });
 
-            req.body.owner = req.params.id;
+            userRepository.getUser = jest.fn().mockResolvedValue(mockUser);
+            userRepository.updateUser = jest.fn().mockResolvedValue(newTattoo);
+
+            req.body.owner = req.params;
             await tattooController.createTattoo(
                 req as Request,
                 res as Response,
                 next
             );
 
-            expect(res.json).toHaveBeenCalledWith(newTattoo);
+            expect(res.json).toHaveBeenCalledWith({ tattoos: newTattoo });
         });
+    });
 
-        // test('should first', async () => {
-        //     req.params = { id: '1' };
-        //     req.body = { newTattoo };
+    describe('When updateTattoo is called', () => {
+        test('Then updateTattoo return', async () => {
+            userRepository.getUser = jest.fn().mockResolvedValue({
+                id: '16',
+                portfolio: [{ id: req.body.id }],
+            });
 
-        //     const user = req.params;
-        // });
+            tattooRepository.updateTattoo = jest.fn().mockResolvedValue([]);
+
+            userRepository.updateUser = jest
+                .fn()
+                .mockResolvedValue(mockUser.portfolio);
+
+            await tattooController.updateTattoo(
+                req as Request,
+                res as Response,
+                next
+            );
+            expect(res.json).toHaveBeenCalled();
+        });
+    });
+
+    describe('When deleteTattoo is called', () => {
+        test('Then deleteTattoo return', async () => {
+            req = {
+                params: { id: '123' },
+                body: { id: '14', owner: '12' },
+            };
+            userRepository.getUser = jest
+                .fn()
+                .mockResolvedValue({ portfolio: [{ _id: '14' }], id: '123' });
+
+            tattooRepository.getTattoo = jest
+                .fn()
+                .mockResolvedValue({ id: '14', owner: { _id: '123' } });
+
+            tattooRepository.deleteTattoo = jest.fn().mockResolvedValue({});
+            userRepository.updateUser = jest
+                .fn()
+                .mockResolvedValue({ name: 'pepe' });
+
+            await tattooController.deleteTattoo(
+                req as Request,
+                res as Response,
+                next
+            );
+            expect(res.json).toHaveBeenCalledWith({
+                updateUser: { name: 'pepe' },
+            });
+        });
     });
 });
 
@@ -114,8 +170,7 @@ describe('GIven TattooController returns error', () => {
         tattooRepository,
         userRepository
     );
-
-    const req: Partial<Request> = {};
+    let req: Partial<Request> = {};
     const res: Partial<Response> = {
         json: jest.fn(),
     };
@@ -145,14 +200,32 @@ describe('GIven TattooController returns error', () => {
             next
         );
         expect(error).toBeInstanceOf(HTTPError);
+        expect(error).toBeInstanceOf(Error);
     });
 
     test('When updateTattoo should return error', async () => {
+        req = { params: { id: '5' }, body: { id: '2', owner: '4' } };
+        error.message = 'difference id';
+        tattooRepository.updateTattoo = jest.fn().mockRejectedValue(error);
         await tattooController.updateTattoo(
             req as Request,
             res as Response,
             next
         );
         expect(error).toBeInstanceOf(HTTPError);
+        expect(error).toBeInstanceOf(Error);
+    });
+
+    test('When deleteTattoo should return error', async () => {
+        req = { params: { id: '5' }, body: { id: '2', owner: '4' } };
+        error.message = 'difference id propertied';
+        tattooRepository.deleteTattoo = jest.fn().mockRejectedValue(error);
+        await tattooController.deleteTattoo(
+            req as Request,
+            res as Response,
+            next
+        );
+        expect(error).toBeInstanceOf(HTTPError);
+        expect(error).toBeInstanceOf(Error);
     });
 });

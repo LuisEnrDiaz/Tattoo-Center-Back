@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response, NextFunction } from 'express';
 import createDebug from 'debug';
 
@@ -24,6 +25,6 @@ export const errorManager = (
         type: error.name,
         error: error.message,
     };
-
-    res.status(status).json(result).end();
+    res.status(status);
+    res.json(result).end();
 };

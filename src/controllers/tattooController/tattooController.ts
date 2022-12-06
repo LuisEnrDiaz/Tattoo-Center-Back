@@ -78,6 +78,7 @@ export class TattooController {
                 throw new Error('difference id');
             }
             await this.tattooRepository.updateTattoo(req.body.id, req.body);
+
             user.portfolio.filter((item) => {
                 return item.id.toString() !== req.body.id.toString();
             });
@@ -97,7 +98,6 @@ export class TattooController {
     async deleteTattoo(req: Request, res: Response, next: NextFunction) {
         try {
             debug('deleteTattoo');
-
             const user = await this.userRepository.getUser(req.params.id);
             const tattoo = await this.tattooRepository.getTattoo(req.body.id);
 
@@ -123,11 +123,6 @@ export class TattooController {
     }
 
     #createHttpError(error: Error) {
-        if (error.message === 'Not found id') {
-            const httpError = new HTTPError(404, 'Not found', error.message);
-            return httpError;
-        }
-
         const httpError = new HTTPError(
             503,
             'Service unavailable',

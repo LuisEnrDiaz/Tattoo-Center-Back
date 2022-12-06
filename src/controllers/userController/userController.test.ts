@@ -15,7 +15,6 @@ const mockData = [
     {
         id: '1',
         name: 'pepe',
-        password: '123',
         email: '',
         image: '',
         favorites: [{ id: '1' }],
@@ -23,21 +22,11 @@ const mockData = [
     {
         id: '2',
         name: 'coco',
-        password: '456',
         email: '',
         image: '',
         favorites: [],
     },
 ];
-
-const mockDataFavorites = {
-    id: '3',
-    name: 'pepe',
-    password: '123',
-    email: '',
-    image: '',
-    favorites: [{ id: '1' }, { id: '3' }],
-};
 
 const mockTattoo = { id: '1', favorites: ['123'] };
 
@@ -57,13 +46,6 @@ describe('Given the users controller,', () => {
 
         userController = new UserController(userRepository, repository);
 
-        userRepository.createUser = jest.fn().mockResolvedValue(mockData[0]);
-        userRepository.findUser = jest.fn().mockResolvedValue(mockData[0]);
-        userRepository.deleteUser = jest
-            .fn()
-            .mockResolvedValue(mockDataFavorites);
-        userRepository.getUser = jest.fn().mockResolvedValue(mockData[1]);
-        userRepository.updateUser = jest.fn().mockResolvedValue(mockData[0]);
         req = {};
         res = {};
         res.status = jest.fn().mockReturnValue(res);
@@ -73,6 +55,9 @@ describe('Given the users controller,', () => {
 
     describe('Given register is called,', () => {
         test('Then register should return', async () => {
+            userRepository.createUser = jest
+                .fn()
+                .mockResolvedValue(mockData[0]);
             req.body = { mockData };
             await userController.register(
                 req as Request,
@@ -85,6 +70,7 @@ describe('Given the users controller,', () => {
 
     describe('Given login is called', () => {
         test('Then login should return', async () => {
+            userRepository.findUser = jest.fn().mockResolvedValue(mockData[0]);
             const error: CustomError = new HTTPError(
                 404,
                 'Not found id',
@@ -110,6 +96,7 @@ describe('Given the users controller,', () => {
 
     describe('Given deleteUser is called', () => {
         test('Then deleteUSer should return', async () => {
+            userRepository.deleteUser = jest.fn().mockResolvedValue({});
             req.params = { id: '1' };
             await userController.deleteUser(
                 req as Request,
@@ -122,6 +109,7 @@ describe('Given the users controller,', () => {
 
     describe('Given getUser is called', () => {
         test('Then getUser should return', async () => {
+            userRepository.getUser = jest.fn().mockResolvedValue(mockData[1]);
             req.params = { id: '2' };
             req.body = mockTattoo;
             await userController.getUser(req as Request, res as Response, next);
@@ -132,28 +120,72 @@ describe('Given the users controller,', () => {
 
     describe('Given addTattooFavorites is called', () => {
         test('Then addTattooFavorites return', async () => {
+            const result = {
+                favorites: { id: '1' },
+            };
+            userRepository.updateUser = jest
+                .fn()
+                .mockResolvedValue(mockData[0].favorites);
+
             req.params = { id: '1' };
-            req.body = { id: '2' };
+
+            req.body = result.favorites.id;
 
             await userController.addTattooFavorites(
                 req as Request,
                 res as Response,
                 next
             );
-            expect(res.json).toHaveBeenCalledWith(mockData[0]);
+            expect(res.json).toHaveBeenCalledWith({
+                favorites: [result.favorites],
+            });
+        });
+
+        test('should first', async () => {
+            req = {
+                body: {
+                    id: '3',
+                },
+                params: { id: '1234' },
+            };
+            userRepository.getUser = jest
+                .fn()
+                .mockResolvedValue({ favorites: [{ _id: '3' }] });
+
+            userRepository.updateUser = jest.fn().mockResolvedValue('');
+
+            await userController.addTattooFavorites(
+                req as Request,
+                res as Response,
+                next
+            );
+            expect(next).toHaveBeenCalled();
         });
     });
 
     describe('Given deleteTattooFavorites is called', () => {
         test('Then deleteTattooFavorites return', async () => {
-            req.params = { id: '3' };
-            req.body = { id: '3' };
+            req = {
+                body: {
+                    id: '3',
+                },
+                params: { id: '1234' },
+            };
+            userRepository.getUser = jest
+                .fn()
+                .mockResolvedValue({ favorites: [{ _id: '6' }], id: '36' });
+            repository.getTattoo = jest.fn().mockResolvedValue({ id: '3' });
+            userRepository.updateUser = jest
+                .fn()
+                .mockResolvedValue({ favorites: [] });
+
             await userController.deleteTattooFavorites(
                 req as Request,
                 res as Response,
                 next
             );
-            expect(res.json).toHaveBeenCalledWith(mockData[0]);
+
+            expect(res.json).toHaveBeenCalled();
         });
     });
 });
@@ -173,8 +205,7 @@ describe('Given UserController return error', () => {
     userRepo.updateUser = jest.fn().mockResolvedValue(['User']);
 
     const userController = new UserController(userRepo, repository);
-
-    const req: Partial<Request> = {};
+    let req: Partial<Request> = {};
     const res: Partial<Response> = {
         json: jest.fn(),
     };
@@ -219,7 +250,22 @@ describe('Given UserController return error', () => {
 
     describe('Given getUser should throw error', () => {
         test('It should throw an error', async () => {
+            req = { params: { id: 's' } };
+            error.message = 'Not found id';
+            userRepo.getUser = jest.fn().mockRejectedValue(error);
             await userController.getUser(req as Request, res as Response, next);
+            expect(error).toBeInstanceOf(Error);
+            expect(error).toBeInstanceOf(HTTPError);
+        });
+    });
+
+    describe('Given deleteTattooFAvorites throw error', () => {
+        test('It should throw an error', async () => {
+            await userController.deleteTattooFavorites(
+                req as Request,
+                res as Response,
+                next
+            );
             expect(error).toBeInstanceOf(Error);
             expect(error).toBeInstanceOf(HTTPError);
         });

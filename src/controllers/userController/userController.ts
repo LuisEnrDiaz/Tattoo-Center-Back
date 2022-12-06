@@ -20,7 +20,9 @@ export class UserController {
     async getUser(req: Request, res: Response, next: NextFunction) {
         try {
             debug('getUser');
+
             const user = await this.userRepository.getUser(req.params.id);
+
             res.json({ user });
         } catch (error) {
             next(this.#createHttpError(error as Error));
@@ -58,7 +60,6 @@ export class UserController {
             }
 
             const token = createToken({
-                id: user.id.toString(),
                 name: user.name,
             });
 
