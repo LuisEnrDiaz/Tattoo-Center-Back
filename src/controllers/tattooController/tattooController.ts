@@ -8,8 +8,8 @@ import { TattooRepo, UserRepo } from '../../repository/repository.js';
 
 export class TattooController {
     constructor(
-        public tattooRepository: TattooRepo<TattooI>,
-        public userRepository: UserRepo<UserI>
+        public readonly tattooRepository: TattooRepo<TattooI>,
+        public readonly userRepository: UserRepo<UserI>
     ) {
         debug('instance');
     }
@@ -35,11 +35,9 @@ export class TattooController {
         try {
             debug('getTattoo');
 
-            const tattoos = await this.tattooRepository.getTattoo(
-                req.params.id
-            );
+            const tattoo = await this.tattooRepository.getTattoo(req.params.id);
 
-            res.json({ tattoos });
+            res.json({ tattoo });
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }
@@ -48,6 +46,7 @@ export class TattooController {
     async createTattoo(req: Request, res: Response, next: NextFunction) {
         try {
             debug('createTattoo');
+
             const user = await this.userRepository.getUser(req.params.id);
 
             req.body.owner = user.id;
@@ -76,34 +75,54 @@ export class TattooController {
             const user = await this.userRepository.getUser(req.params.id);
 
             if (user.id.toString() !== req.body.owner.toString()) {
-                throw new Error('que no pesao');
+                throw new Error('difference id');
             }
-
-            user.portfolio.forEach((item) => {
-                item._id.toString() !== req.body.id.toString();
-            });
-
             await this.tattooRepository.updateTattoo(req.body.id, req.body);
 
-            user.portfolio.push(req.body.id);
-
+            user.portfolio.filter((item) => {
+                return item.id.toString() !== req.body.id.toString();
+            });
             const result = await this.userRepository.updateUser(
                 req.params.id,
                 user
             );
 
-            res.json(result);
+            user.portfolio.push(req.body.id);
+
+            res.json({ result });
+        } catch (error) {
+            next(this.#createHttpError(error as Error));
+        }
+    }
+
+    async deleteTattoo(req: Request, res: Response, next: NextFunction) {
+        try {
+            debug('deleteTattoo');
+            const user = await this.userRepository.getUser(req.params.id);
+            const tattoo = await this.tattooRepository.getTattoo(req.body.id);
+
+            if (tattoo.owner._id.toString() !== user.id.toString()) {
+                throw new Error('difference id propertied');
+            }
+
+            await this.tattooRepository.deleteTattoo(req.body.id);
+
+            const filter = user.portfolio.filter((item) => {
+                return item._id.toString() !== tattoo.id.toString();
+            });
+
+            const updateUser = await this.userRepository.updateUser(
+                req.params.id,
+                { portfolio: filter }
+            );
+
+            res.json({ updateUser });
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }
     }
 
     #createHttpError(error: Error) {
-        if (error.message === 'Not found id') {
-            const httpError = new HTTPError(404, 'Not found', error.message);
-            return httpError;
-        }
-
         const httpError = new HTTPError(
             503,
             'Service unavailable',

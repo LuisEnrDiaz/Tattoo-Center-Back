@@ -20,7 +20,9 @@ export class UserController {
     async getUser(req: Request, res: Response, next: NextFunction) {
         try {
             debug('getUser');
+
             const user = await this.userRepository.getUser(req.params.id);
+
             res.json({ user });
         } catch (error) {
             next(this.#createHttpError(error as Error));
@@ -58,7 +60,6 @@ export class UserController {
             }
 
             const token = createToken({
-                id: user.id.toString(),
                 name: user.name,
             });
 
@@ -93,12 +94,11 @@ export class UserController {
 
             user.favorites.push(req.body.id);
 
-            const result = await this.userRepository.updateUser(
+            const favorites = await this.userRepository.updateUser(
                 req.params.id,
                 user
             );
-            res.status(200);
-            res.json({ result });
+            res.json({ favorites });
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }

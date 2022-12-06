@@ -30,7 +30,7 @@ export class UserRepository implements UserRepo<UserI> {
             .populate('favorites')
             .populate('portfolio');
         if (!result) {
-            throw new Error('not found id');
+            throw new Error('Not found id');
         }
         return result;
     }
@@ -50,7 +50,7 @@ export class UserRepository implements UserRepo<UserI> {
     async findUser(search: Partial<UserI>): Promise<UserI> {
         debug('findUser', { search });
         const result = await this.#Model.findOne(search);
-        if (!result) throw new Error('not found id');
+        if (!result) throw new Error('Not found id');
         return result;
     }
 

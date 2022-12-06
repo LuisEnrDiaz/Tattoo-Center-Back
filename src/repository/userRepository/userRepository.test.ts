@@ -96,7 +96,7 @@ describe('Given UserRepository', () => {
 
         test('Then updateUserFavorites should return error', () => {
             expect(async () => {
-                const invalidId = '537b422da27b69c98b1916e1';
+                const invalidId = '123456789012345678901234';
                 await repository.updateUser(invalidId, {
                     name: updateName,
                 });

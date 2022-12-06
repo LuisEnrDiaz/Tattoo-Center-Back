@@ -40,7 +40,7 @@ export class TattooRepository implements TattooRepo<TattooI> {
             .findById(id)
             .populate('owner', { favorites: 0 });
         if (!result) {
-            throw new Error('not found id');
+            throw new Error('Not found id');
         }
         return result;
     }
@@ -64,7 +64,7 @@ export class TattooRepository implements TattooRepo<TattooI> {
             .populate('owner', { tattoo: 0 });
 
         if (!result) {
-            throw new Error('not found id');
+            throw new Error('Not found id');
         }
         return result;
     }
