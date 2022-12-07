@@ -70,6 +70,7 @@ describe('Given "app" with "/tattoos" route', () => {
 
             const payload: TokenPayload = {
                 name: 'coco',
+                id: '1',
             };
 
             token = createToken(payload);
@@ -98,7 +99,7 @@ describe('Given "app" with "/tattoos" route', () => {
                 const response = await request(app)
                     .post('/tattoos/')
                     .send({ image: 'createdTattoo' });
-                expect(response.status).toBe(404);
+                expect(response.status).toBe(403);
             });
         });
     });

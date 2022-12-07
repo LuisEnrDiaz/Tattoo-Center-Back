@@ -14,16 +14,6 @@ const controller = new TattooController(
 
 tattooRoutes.get('/', controller.getAllTattoo.bind(controller));
 tattooRoutes.get('/:id', controller.getTattoo.bind(controller));
-tattooRoutes.post('/:id', logged, controller.createTattoo.bind(controller));
-tattooRoutes.patch(
-    '/:id',
-    logged,
-    who,
-    controller.updateTattoo.bind(controller)
-);
-tattooRoutes.delete(
-    '/:id',
-    logged,
-    who,
-    controller.deleteTattoo.bind(controller)
-);
+tattooRoutes.post('/', logged, controller.createTattoo.bind(controller));
+tattooRoutes.patch('/', logged, who, controller.updateTattoo.bind(controller));
+tattooRoutes.delete('/', logged, who, controller.deleteTattoo.bind(controller));

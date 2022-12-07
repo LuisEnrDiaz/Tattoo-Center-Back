@@ -41,7 +41,7 @@ export const who = async (
     debug('who');
     const repository = TattooRepository.getInstance();
     try {
-        const tattoo = await repository.getTattoo(req.params.id);
+        const tattoo = await repository.getTattoo(req.body.id);
         if (!req.payload || tattoo.owner._id.toString() !== req.payload.id) {
             next(new HTTPError(403, 'Forbidden', 'User or password incorrect'));
         }
