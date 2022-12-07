@@ -17,7 +17,7 @@ export type ProtoTattooI = {
 
 type Category =
     | 'TRADITIONAL'
-    | 'Old SCHOOL'
+    | 'OLD SCHOOL'
     | 'TRIBAL'
     | 'REALISM'
     | 'JAPANESE'

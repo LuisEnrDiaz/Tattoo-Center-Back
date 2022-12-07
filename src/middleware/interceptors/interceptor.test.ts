@@ -110,9 +110,7 @@ describe('Given the interceptor Who', () => {
         });
 
         test('Then it should throw an error', () => {
-            const req: Partial<ExtraRequest> = {
-                payload: undefined,
-            };
+            const req: Partial<ExtraRequest> = {};
             const res: Partial<Response> = {};
             const next: NextFunction = jest.fn();
             const error = new Error('User or password incorrect');

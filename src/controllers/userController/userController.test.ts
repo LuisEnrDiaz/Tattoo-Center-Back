@@ -8,6 +8,7 @@ import {
     HTTPError,
 } from '../../interface/errorInterface/errorInterface.js';
 import { TattooRepository } from '../../repository/tattooRepository/tattooRepository.js';
+import { ExtraRequest } from '../../middleware/interceptors/interceptors.js';
 
 jest.mock('./../../services/auth/auth.js');
 
@@ -36,7 +37,7 @@ describe('Given the users controller,', () => {
     let repository: TattooRepository;
     let userRepository: UserRepository;
     let userController: UserController;
-    let req: Partial<Request>;
+    let req: Partial<ExtraRequest>;
     let res: Partial<Response>;
     let next: NextFunction;
 
@@ -97,7 +98,9 @@ describe('Given the users controller,', () => {
     describe('Given deleteUser is called', () => {
         test('Then deleteUSer should return', async () => {
             userRepository.deleteUser = jest.fn().mockResolvedValue({});
-            req.params = { id: '1' };
+            req = {
+                payload: { id: '1' },
+            };
             await userController.deleteUser(
                 req as Request,
                 res as Response,
@@ -127,7 +130,10 @@ describe('Given the users controller,', () => {
                 .fn()
                 .mockResolvedValue(mockData[0].favorites);
 
-            req.params = { id: '1' };
+            req = {
+                payload: { id: '1', favorites: {} },
+                body: { id: '2' },
+            };
 
             req.body = result.favorites.id;
 
@@ -146,7 +152,7 @@ describe('Given the users controller,', () => {
                 body: {
                     id: '3',
                 },
-                params: { id: '1234' },
+                payload: { id: '1234' },
             };
             userRepository.getUser = jest
                 .fn()
@@ -169,7 +175,7 @@ describe('Given the users controller,', () => {
                 body: {
                     id: '3',
                 },
-                params: { id: '1234' },
+                payload: { id: '1234' },
             };
             userRepository.getUser = jest
                 .fn()

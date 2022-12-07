@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 import { TattooI } from '../../entities/tattooEntities/tattooEntities.js';
 import { UserI } from '../../entities/userEntities/userEntities.js';
 import { HTTPError } from '../../interface/errorInterface/errorInterface.js';
+import { ExtraRequest } from '../../middleware/interceptors/interceptors.js';
 import { TattooRepo, UserRepo } from '../../repository/repository.js';
 import { createToken, passwordValidate } from '../../services/auth/auth.js';
 
@@ -51,6 +52,7 @@ export class UserController {
             const user = await this.userRepository.findUser({
                 name: req.body.name,
             });
+
             const isPasswordValid = await passwordValidate(
                 req.body.password,
                 user.password
@@ -61,6 +63,7 @@ export class UserController {
 
             const token = createToken({
                 name: user.name,
+                id: user.id.toString(),
             });
 
             res.json({ token });
@@ -69,22 +72,32 @@ export class UserController {
         }
     }
 
-    async deleteUser(req: Request, res: Response, next: NextFunction) {
+    async deleteUser(req: ExtraRequest, res: Response, next: NextFunction) {
         try {
             debug('deleteUser');
-
-            await this.userRepository.deleteUser(req.params.id);
+            if (!req.payload) {
+                throw new Error('');
+            }
+            await this.userRepository.deleteUser(req.payload.id);
             res.json({});
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }
     }
 
-    async addTattooFavorites(req: Request, res: Response, next: NextFunction) {
+    async addTattooFavorites(
+        req: ExtraRequest,
+        res: Response,
+        next: NextFunction
+    ) {
         try {
             debug('addTattooFavorites');
 
-            const user = await this.userRepository.getUser(req.params.id);
+            if (!req.payload) {
+                throw new Error('Not found id');
+            }
+
+            const user = await this.userRepository.getUser(req.payload.id);
 
             user.favorites.forEach((item) => {
                 if (item._id.toString() === req.body.id.toString()) {
@@ -95,7 +108,7 @@ export class UserController {
             user.favorites.push(req.body.id);
 
             const favorites = await this.userRepository.updateUser(
-                req.params.id,
+                req.payload.id,
                 user
             );
             res.json({ favorites });
@@ -105,14 +118,17 @@ export class UserController {
     }
 
     async deleteTattooFavorites(
-        req: Request,
+        req: ExtraRequest,
         res: Response,
         next: NextFunction
     ) {
         try {
             debug('deleteTattooFavorites');
+            if (!req.payload) {
+                throw new Error('Not found id');
+            }
 
-            const user = await this.userRepository.getUser(req.params.id);
+            const user = await this.userRepository.getUser(req.payload.id);
             const tattoo = await this.tattooRepository.getTattoo(req.body.id);
 
             const deleteTattoo = user.favorites.filter((item) => {

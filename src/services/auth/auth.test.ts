@@ -5,7 +5,7 @@ import { SECRET } from '../../config.js';
 import * as auth from './auth.js';
 
 const mockData = {
-    id: '',
+    id: '1',
     name: 'pepe',
     password: '123',
 };

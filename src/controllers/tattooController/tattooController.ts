@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 import { TattooI } from '../../entities/tattooEntities/tattooEntities.js';
 import { UserI } from '../../entities/userEntities/userEntities.js';
 import { HTTPError } from '../../interface/errorInterface/errorInterface.js';
+import { ExtraRequest } from '../../middleware/interceptors/interceptors.js';
 import { TattooRepo, UserRepo } from '../../repository/repository.js';
 
 export class TattooController {
@@ -43,11 +44,14 @@ export class TattooController {
         }
     }
 
-    async createTattoo(req: Request, res: Response, next: NextFunction) {
+    async createTattoo(req: ExtraRequest, res: Response, next: NextFunction) {
         try {
             debug('createTattoo');
 
-            const user = await this.userRepository.getUser(req.params.id);
+            if (!req.payload) {
+                throw new Error('error');
+            }
+            const user = await this.userRepository.getUser(req.payload.id);
 
             req.body.owner = user.id;
 
@@ -58,7 +62,7 @@ export class TattooController {
             user.portfolio.push(newTattoo.id);
 
             const tattoos = await this.userRepository.updateUser(
-                req.params.id,
+                req.payload.id,
                 user
             );
 
@@ -68,11 +72,15 @@ export class TattooController {
         }
     }
 
-    async updateTattoo(req: Request, res: Response, next: NextFunction) {
+    async updateTattoo(req: ExtraRequest, res: Response, next: NextFunction) {
         try {
             debug('updateTattoo');
 
-            const user = await this.userRepository.getUser(req.params.id);
+            if (!req.payload) {
+                throw new Error('error');
+            }
+
+            const user = await this.userRepository.getUser(req.payload.id);
 
             if (user.id.toString() !== req.body.owner.toString()) {
                 throw new Error('difference id');
@@ -83,7 +91,7 @@ export class TattooController {
                 return item.id.toString() !== req.body.id.toString();
             });
             const result = await this.userRepository.updateUser(
-                req.params.id,
+                req.payload.id,
                 user
             );
 
@@ -95,24 +103,29 @@ export class TattooController {
         }
     }
 
-    async deleteTattoo(req: Request, res: Response, next: NextFunction) {
+    async deleteTattoo(req: ExtraRequest, res: Response, next: NextFunction) {
         try {
             debug('deleteTattoo');
-            const user = await this.userRepository.getUser(req.params.id);
+
+            if (!req.payload) {
+                throw new Error('error');
+            }
+
+            const user = await this.userRepository.getUser(req.payload.id);
             const tattoo = await this.tattooRepository.getTattoo(req.body.id);
 
             if (tattoo.owner._id.toString() !== user.id.toString()) {
                 throw new Error('difference id propertied');
             }
 
-            await this.tattooRepository.deleteTattoo(req.body.id);
+            await this.tattooRepository.deleteTattoo(tattoo.id.toString());
 
             const filter = user.portfolio.filter((item) => {
                 return item._id.toString() !== tattoo.id.toString();
             });
 
             const updateUser = await this.userRepository.updateUser(
-                req.params.id,
+                req.payload.id,
                 { portfolio: filter }
             );
 

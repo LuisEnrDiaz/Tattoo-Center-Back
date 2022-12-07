@@ -3,6 +3,7 @@ import {
     CustomError,
     HTTPError,
 } from '../../interface/errorInterface/errorInterface';
+import { ExtraRequest } from '../../middleware/interceptors/interceptors';
 
 import { TattooRepository } from '../../repository/tattooRepository/tattooRepository';
 import { UserRepository } from '../../repository/userRepository/userRepository';
@@ -12,7 +13,7 @@ describe('Given TattooController', () => {
     let tattooRepository: TattooRepository;
     let userRepository: UserRepository;
     let tattooController: TattooController;
-    let req: Partial<Request>;
+    let req: Partial<ExtraRequest>;
     let res: Partial<Response>;
     let next: NextFunction;
 
@@ -79,6 +80,11 @@ describe('Given TattooController', () => {
 
     describe('When createTattoo is called', () => {
         test('Then createTattoo should return', async () => {
+            req = {
+                payload: { id: '7' },
+                body: { image: '' },
+            };
+
             tattooRepository.createTattoo = jest
                 .fn()
                 .mockReturnValue({ ...newTattoo, id: '1' });
@@ -88,7 +94,7 @@ describe('Given TattooController', () => {
 
             req.body.owner = req.params;
             await tattooController.createTattoo(
-                req as Request,
+                req as ExtraRequest,
                 res as Response,
                 next
             );
@@ -99,12 +105,18 @@ describe('Given TattooController', () => {
 
     describe('When updateTattoo is called', () => {
         test('Then updateTattoo return', async () => {
+            req = {
+                payload: { id: '16' },
+                body: { id: '8', image: 'tt', owner: '16' },
+            };
             userRepository.getUser = jest.fn().mockResolvedValue({
                 id: '16',
-                portfolio: [{ id: req.body.id }],
+                portfolio: [{ id: '8' }],
             });
 
-            tattooRepository.updateTattoo = jest.fn().mockResolvedValue([]);
+            tattooRepository.updateTattoo = jest
+                .fn()
+                .mockResolvedValue(req.body.i);
 
             userRepository.updateUser = jest
                 .fn()
@@ -117,12 +129,29 @@ describe('Given TattooController', () => {
             );
             expect(res.json).toHaveBeenCalled();
         });
+
+        test('Then updateTattoo return error', async () => {
+            req = {
+                payload: { id: '16' },
+                body: { id: '8', image: 'tt', owner: '15' },
+            };
+            userRepository.getUser = jest.fn().mockResolvedValue({
+                id: '16',
+                portfolio: [{ id: '8' }],
+            });
+            await tattooController.updateTattoo(
+                req as Request,
+                res as Response,
+                next
+            );
+            expect(next).toHaveBeenCalled();
+        });
     });
 
     describe('When deleteTattoo is called', () => {
         test('Then deleteTattoo return', async () => {
             req = {
-                params: { id: '123' },
+                payload: { id: '123' },
                 body: { id: '14', owner: '12' },
             };
             userRepository.getUser = jest
@@ -150,12 +179,10 @@ describe('Given TattooController', () => {
 
         test('Then deleteTattoo return error', async () => {
             req = {
-                params: { id: '123' },
+                payload: { id: '123' },
                 body: { id: '14', owner: '4851' },
             };
-            userRepository.getUser = jest
-                .fn()
-                .mockResolvedValue({ portfolio: [{ _id: '14' }], id: '123' });
+            userRepository.getUser = jest.fn().mockResolvedValue({ id: '123' });
 
             tattooRepository.getTattoo = jest
                 .fn()
