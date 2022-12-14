@@ -66,7 +66,7 @@ export class UserController {
                 id: user.id.toString(),
             });
 
-            res.json({ token });
+            res.json({ token, user });
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }
@@ -107,11 +107,11 @@ export class UserController {
 
             user.favorites.push(req.body.id);
 
-            const favorites = await this.userRepository.updateUser(
+            const newUser = await this.userRepository.updateUser(
                 req.payload.id,
                 user
             );
-            res.json({ favorites });
+            res.json({ user: newUser });
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }
@@ -135,14 +135,14 @@ export class UserController {
                 return item._id.toString() !== tattoo.id.toString();
             });
 
-            const updateTattoo = await this.userRepository.updateUser(
+            const newUser = await this.userRepository.updateUser(
                 user.id.toString(),
                 {
                     favorites: deleteTattoo,
                 }
             );
 
-            res.json({ updateTattoo });
+            res.json({ user: newUser });
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }

@@ -91,7 +91,10 @@ describe('Given the users controller,', () => {
 
             await userController.login(req as Request, res as Response, next);
 
-            expect(res.json).toHaveBeenCalledWith({ token: 'token' });
+            expect(res.json).toHaveBeenCalledWith({
+                token: 'token',
+                user: mockData[0],
+            });
         });
     });
 
@@ -143,7 +146,7 @@ describe('Given the users controller,', () => {
                 next
             );
             expect(res.json).toHaveBeenCalledWith({
-                favorites: [result.favorites],
+                user: [result.favorites],
             });
         });
 

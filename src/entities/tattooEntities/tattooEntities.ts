@@ -3,14 +3,14 @@ import { model, Schema, Types } from 'mongoose';
 export type TattooI = {
     id: Types.ObjectId;
     image: string;
-    categories: Array<Category>;
+    categories: Category;
     link: string;
     owner: Types.ObjectId;
 };
 
 export type ProtoTattooI = {
     image: string;
-    categories: Array<Category>;
+    categories: Category;
     link: string;
     owner: Types.ObjectId;
 };
@@ -26,10 +26,10 @@ type Category =
 export const tattooSchema = new Schema<TattooI>({
     image: {
         type: String,
-        required: true,
+        // required: true,
     },
     categories: {
-        type: [String],
+        type: String,
     },
 
     link: {

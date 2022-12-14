@@ -49,7 +49,10 @@ export class UserRepository implements UserRepo<UserI> {
 
     async findUser(search: Partial<UserI>): Promise<UserI> {
         debug('findUser', { search });
-        const result = await this.#Model.findOne(search);
+        const result = await this.#Model
+            .findOne(search)
+            .populate('favorites')
+            .populate('portfolio');
         if (!result) throw new Error('Not found id');
         return result;
     }
@@ -57,9 +60,12 @@ export class UserRepository implements UserRepo<UserI> {
     async updateUser(id: id, data: Partial<UserI>): Promise<UserI> {
         debug('updateUser', id);
 
-        const result = await this.#Model.findByIdAndUpdate(id, data, {
-            new: true,
-        });
+        const result = await this.#Model
+            .findByIdAndUpdate(id, data, {
+                new: true,
+            })
+            .populate('favorites')
+            .populate('portfolio');
 
         if (!result) {
             throw new Error('not found id');

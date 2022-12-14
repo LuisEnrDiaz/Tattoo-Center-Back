@@ -61,12 +61,12 @@ export class TattooController {
 
             user.portfolio.push(newTattoo.id);
 
-            const tattoos = await this.userRepository.updateUser(
+            const newUser = await this.userRepository.updateUser(
                 req.payload.id,
                 user
             );
 
-            res.json({ tattoos });
+            res.json({ newUser });
         } catch (error) {
             next(this.#createHttpError(error as Error));
         }
@@ -81,8 +81,9 @@ export class TattooController {
             }
 
             const user = await this.userRepository.getUser(req.payload.id);
+            const tattoo = await this.tattooRepository.getTattoo(req.body.id);
 
-            if (user.id.toString() !== req.body.owner.toString()) {
+            if (user.id.toString() !== tattoo.owner.toString()) {
                 throw new Error('difference id');
             }
             await this.tattooRepository.updateTattoo(req.body.id, req.body);
@@ -123,7 +124,8 @@ export class TattooController {
             const filter = user.portfolio.filter((item) => {
                 return item._id.toString() !== tattoo.id.toString();
             });
-
+            console.log(user.portfolio);
+            console.log(tattoo.id);
             const updateUser = await this.userRepository.updateUser(
                 req.payload.id,
                 { portfolio: filter }

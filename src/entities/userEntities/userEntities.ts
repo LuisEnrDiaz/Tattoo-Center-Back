@@ -31,8 +31,8 @@ export const userSchema = new Schema<UserI>({
     },
     email: {
         type: String,
-        required: true,
-        unique: true,
+        // required: true,
+        // unique: true,
     },
     password: {
         type: String,
@@ -40,17 +40,17 @@ export const userSchema = new Schema<UserI>({
     },
     image: {
         type: String,
-        required: true,
+        // required: true,
     },
     favorites: [
         {
-            type: Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: 'Tattoo',
         },
     ],
     portfolio: [
         {
-            type: Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: 'Tattoo',
         },
     ],

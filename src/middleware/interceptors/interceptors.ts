@@ -4,6 +4,7 @@ import { JwtPayload } from 'jsonwebtoken';
 
 import { HTTPError } from '../../interface/errorInterface/errorInterface.js';
 import { TattooRepository } from '../../repository/tattooRepository/tattooRepository.js';
+import { UserRepository } from '../../repository/userRepository/userRepository.js';
 import { readToken } from '../../services/auth/auth.js';
 
 const debug = createDebug('TC:middleware:interceptors');
@@ -39,10 +40,10 @@ export const who = async (
     next: NextFunction
 ) => {
     debug('who');
-    const repository = TattooRepository.getInstance();
+    const repository = UserRepository.getInstance();
     try {
-        const tattoo = await repository.getTattoo(req.body.id);
-        if (!req.payload || tattoo.owner._id.toString() !== req.payload.id) {
+        const user = await repository.getUser(req.body.id);
+        if (!req.payload || user.id.toString() !== req.payload.id) {
             next(new HTTPError(403, 'Forbidden', 'User or password incorrect'));
         }
         next();

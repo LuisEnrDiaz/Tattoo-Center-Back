@@ -99,7 +99,7 @@ describe('Given TattooController', () => {
                 next
             );
 
-            expect(res.json).toHaveBeenCalledWith({ tattoos: newTattoo });
+            expect(res.json).toHaveBeenCalledWith({ newUser: newTattoo });
         });
     });
 
@@ -113,10 +113,15 @@ describe('Given TattooController', () => {
                 id: '16',
                 portfolio: [{ id: '8' }],
             });
+            tattooRepository.getTattoo = jest.fn().mockResolvedValue({
+                id: '8',
+                image: 'tt',
+                owner: '16',
+            });
 
             tattooRepository.updateTattoo = jest
                 .fn()
-                .mockResolvedValue(req.body.i);
+                .mockResolvedValue(req.body);
 
             userRepository.updateUser = jest
                 .fn()
@@ -139,6 +144,11 @@ describe('Given TattooController', () => {
                 id: '16',
                 portfolio: [{ id: '8' }],
             });
+            tattooRepository.getTattoo = jest.fn().mockResolvedValue({
+                id: '8',
+                image: 'tt',
+                owner: '15',
+            });
             await tattooController.updateTattoo(
                 req as Request,
                 res as Response,
@@ -151,21 +161,25 @@ describe('Given TattooController', () => {
     describe('When deleteTattoo is called', () => {
         test('Then deleteTattoo return', async () => {
             req = {
-                payload: { id: '123' },
-                body: { id: '14', owner: '12' },
+                payload: { id: '14', portfolio: { _id: '18' } },
+                params: { id: '18', owner: '14' },
             };
+
             userRepository.getUser = jest
                 .fn()
-                .mockResolvedValue({ portfolio: [{ _id: '14' }], id: '123' });
+                .mockResolvedValue({ id: '14', portfolio: { _id: '18' } });
 
             tattooRepository.getTattoo = jest
                 .fn()
-                .mockResolvedValue({ id: '14', owner: { _id: '123' } });
+                .mockResolvedValue({ id: '18', owner: { _id: '14' } });
 
-            tattooRepository.deleteTattoo = jest.fn().mockResolvedValue({});
+            tattooRepository.deleteTattoo = jest
+                .fn()
+                .mockResolvedValue({ id: '18' });
+
             userRepository.updateUser = jest
                 .fn()
-                .mockResolvedValue({ name: 'pepe' });
+                .mockResolvedValue({ id: '14', portfolio: { _id: '18' } });
 
             await tattooController.deleteTattoo(
                 req as Request,
@@ -173,20 +187,31 @@ describe('Given TattooController', () => {
                 next
             );
             expect(res.json).toHaveBeenCalledWith({
-                updateUser: { name: 'pepe' },
+                updateUser: { id: '14' },
             });
         });
 
         test('Then deleteTattoo return error', async () => {
             req = {
-                payload: { id: '123' },
-                body: { id: '14', owner: '4851' },
+                payload: { id: '14', portfolio: { _id: '178' } },
+                params: { id: '18', owner: '147' },
             };
-            userRepository.getUser = jest.fn().mockResolvedValue({ id: '123' });
 
+            userRepository.getUser = jest
+                .fn()
+                .mockResolvedValue({ id: '14', portfolio: { _id: '178' } });
             tattooRepository.getTattoo = jest
                 .fn()
-                .mockResolvedValue({ id: '14', owner: { _id: '165' } });
+                .mockResolvedValue({ id: '18', owner: { _id: '147' } });
+
+            tattooRepository.deleteTattoo = jest
+                .fn()
+                .mockResolvedValue({ id: '18' });
+
+            userRepository.updateUser = jest
+                .fn()
+                .mockResolvedValue({ id: '14', portfolio: { _id: '178' } });
+
             await tattooController.deleteTattoo(
                 req as Request,
                 res as Response,
