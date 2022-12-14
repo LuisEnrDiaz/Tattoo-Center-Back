@@ -119,13 +119,12 @@ export class TattooController {
                 throw new Error('difference id propertied');
             }
 
-            await this.tattooRepository.deleteTattoo(tattoo.id.toString());
+            await this.tattooRepository.deleteTattoo(req.body.id.toString());
 
             const filter = user.portfolio.filter((item) => {
                 return item._id.toString() !== tattoo.id.toString();
             });
-            console.log(user.portfolio);
-            console.log(tattoo.id);
+
             const updateUser = await this.userRepository.updateUser(
                 req.payload.id,
                 { portfolio: filter }
