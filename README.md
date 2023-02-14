@@ -1,6 +1,14 @@
 <h1 align="center"> TATTOO CENTER BACK-END</h1>
 
-Projecto final de Back-end en ISDI Coders, en este proyecto se llama a una base de datos en mongoDB donde hay dos colleciones.
+# Colne el repositorio
+git clone
+# Instale las dev
+npm i
+# Para el despliegue
+npm run start:dev
+
+
+Projecto final de Back-end en ISDI Coders 3 semanas, en este proyecto se llama a una base de datos en mongoDB donde hay dos colleciones.
 
     -FinalProject
     -FinalProjectTesting
