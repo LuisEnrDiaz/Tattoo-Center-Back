@@ -1,12 +1,17 @@
 <h1 align="center"> TATTOO CENTER BACK-END</h1>
 
-# Colne el repositorio
+---
+
+# Clone el repositorio
 git clone
 # Instale las dev
 npm i
-# Para el despliegue
+# Para el despliegue importante
 npm run start:dev
 
+se abrira en http://localhost:7700
+
+---
 
 Projecto final de Back-end en ISDI Coders 3 semanas, en este proyecto se llama a una base de datos en mongoDB donde hay dos colleciones.
 
