@@ -26,7 +26,7 @@ app.use(setCors);
 
 app.get('/', (req, res) => {
     res.send(
-        'Bienvenido a mi Api de Tattoo Center puedes navegar por: /tattoos o /users'
+        'Bienvenido a mi Api de Tattoo Center puedes navegar por: /tattoos o /users probando'
     );
 });
 
